@@ -19,8 +19,19 @@ logging.basicConfig(level=log_level)
 logger = logging.getLogger("agentkit")
 
 PORT = int(os.getenv("PORT", 8000))
+OWNER_PHONE = "+541137637100"
 
-# Inicialización lazy del proveedor
+# Palabras clave que indican que alguien quiere una reunión o dejó datos
+KEYWORDS_NOTIFICACION = [
+    "el equipo se pondrá en contacto",
+    "equipo se pondra en contacto",
+    "coordinar esa reunión",
+    "coordinar esa reunion",
+    "agendar una reunión",
+    "agendar una reunion",
+    "nos pondremos en contacto",
+]
+
 proveedor = None
 
 
@@ -40,6 +51,25 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+
+def detectar_lead(respuesta: str) -> bool:
+    """Detecta si Pablo está capturando un lead o solicitud de reunión."""
+    respuesta_lower = respuesta.lower()
+    return any(kw in respuesta_lower for kw in KEYWORDS_NOTIFICACION)
+
+
+async def notificar_owner(telefono_cliente: str, mensaje_cliente: str):
+    """Manda un WhatsApp al dueño del negocio cuando hay un lead."""
+    notificacion = (
+        f"*RADAR PYME — Nuevo Lead*\n\n"
+        f"Un cliente quiere una reunion.\n"
+        f"Telefono: {telefono_cliente}\n"
+        f"Ultimo mensaje: {mensaje_cliente}\n\n"
+        f"Contactalo a la brevedad."
+    )
+    await proveedor.enviar_mensaje(OWNER_PHONE, notificacion)
+    logger.info(f"Notificacion enviada al owner por lead de {telefono_cliente}")
 
 
 @app.get("/")
@@ -85,6 +115,10 @@ async def webhook_handler(request: Request):
             await guardar_mensaje(msg.telefono, "assistant", respuesta)
 
             await proveedor.enviar_mensaje(msg.telefono, respuesta)
+
+            # Notificar al dueño si Pablo detectó un lead
+            if detectar_lead(respuesta) and msg.telefono != OWNER_PHONE:
+                await notificar_owner(msg.telefono, msg.texto)
 
             logger.info(f"Respuesta a {msg.telefono}: {respuesta}")
 
