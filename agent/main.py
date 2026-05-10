@@ -18,13 +18,17 @@ log_level = logging.DEBUG if ENVIRONMENT == "development" else logging.INFO
 logging.basicConfig(level=log_level)
 logger = logging.getLogger("agentkit")
 
-proveedor = obtener_proveedor()
 PORT = int(os.getenv("PORT", 8000))
+
+# Inicialización lazy del proveedor
+proveedor = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    global proveedor
     await inicializar_db()
+    proveedor = obtener_proveedor()
     logger.info("Base de datos inicializada")
     logger.info(f"Servidor AgentKit corriendo en puerto {PORT}")
     logger.info(f"Proveedor de WhatsApp: {proveedor.__class__.__name__}")
