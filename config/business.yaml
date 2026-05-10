@@ -1,0 +1,26 @@
+# Configuración del negocio — Generado por AgentKit
+negocio:
+  nombre: "RADAR PYME"
+  descripcion: >
+    Comunidad de negocios que conecta a empresas PyMEs con el mundo corporativo.
+    Brinda asesoramiento especializado en financiamiento, comercio exterior e
+    importaciones de productos específicos. Realiza encuentros mensuales (online
+    y presenciales) de capacitación y actualización, con contenidos sobre economía,
+    criptomonedas, blockchain, comercio electrónico, internacionalización y buenas
+    prácticas de comercialización. También genera informes de coyuntura económica
+    local e internacional para la toma de decisiones empresariales.
+  horario: "24 horas, los 7 días de la semana"
+  web: "www.radarpyme.com.ar"
+  sede: "Edificio Fortabat, Bouchard 610, piso 9, Ciudad Autónoma de Buenos Aires"
+
+agente:
+  nombre: "Pablo"
+  tono: "Profesional y formal"
+  casos_de_uso:
+    - "Responder preguntas frecuentes sobre RADAR PYME y sus servicios"
+    - "Agendar reuniones y citas con el equipo de asesores"
+    - "Calificar y atender leads de potenciales clientes y sponsors"
+
+metadata:
+  creado: "2026-05-10"
+  version: "1.0"
