@@ -9,7 +9,9 @@ from dotenv import load_dotenv
 load_dotenv()
 logger = logging.getLogger("agentkit")
 
-client = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+def get_client() -> AsyncAnthropic:
+    return AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 
 def cargar_config_prompts() -> dict:
@@ -55,7 +57,7 @@ async def generar_respuesta(mensaje: str, historial: list[dict]) -> str:
     })
 
     try:
-        response = await client.messages.create(
+        response = await get_client().messages.create(
             model="claude-sonnet-4-6",
             max_tokens=1024,
             system=system_prompt,

@@ -35,14 +35,17 @@ class ProveedorTwilio(ProveedorWhatsApp):
 
     async def enviar_mensaje(self, telefono: str, mensaje: str) -> bool:
         """Envía mensaje via Twilio API."""
-        if not all([self.account_sid, self.auth_token, self.phone_number]):
-            logger.warning("Variables de Twilio no configuradas")
+        account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+        auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+        phone_number = os.getenv("TWILIO_PHONE_NUMBER")
+        if not all([account_sid, auth_token, phone_number]):
+            logger.warning(f"Variables de Twilio no configuradas: SID={account_sid}, PHONE={phone_number}")
             return False
-        url = f"https://api.twilio.com/2010-04-01/Accounts/{self.account_sid}/Messages.json"
-        auth = base64.b64encode(f"{self.account_sid}:{self.auth_token}".encode()).decode()
+        url = f"https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Messages.json"
+        auth = base64.b64encode(f"{account_sid}:{auth_token}".encode()).decode()
         headers = {"Authorization": f"Basic {auth}"}
         data = {
-            "From": f"whatsapp:{self.phone_number}",
+            "From": f"whatsapp:{phone_number}",
             "To": f"whatsapp:{telefono}",
             "Body": mensaje,
         }
